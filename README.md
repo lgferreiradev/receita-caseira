@@ -16,8 +16,7 @@ keywords.md           mapa de palavras-chave e ações no Perfil da Empresa
 ```
 
 ## Antes de publicar
-1. **Domínio:** troque `https://www.receitacaseirauberaba.com.br/` pelo domínio real em todos os arquivos:
-   `grep -rl "receitacaseirauberaba.com.br" site | xargs sed -i 's#https://www.receitacaseirauberaba.com.br#https://SEU-DOMINIO#g'`
+1. **Domínio:** já configurado como `https://www.fabricareceitacaseria.com.br/` em `site/`.
 2. **Instagram:** confirme `@receitacaseiraa_` (aparece no rodapé, no schema e no llms.txt).
 3. **Fotos:** substitua `assets/caixas.*` e adicione fotos de cada doce em alta resolução (mín. 1200px).
 
