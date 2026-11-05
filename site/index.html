@@ -33,7 +33,7 @@
 <link rel="manifest" href="site.webmanifest">
 
 <link rel="preload" href="assets/fonts/bricolage-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" as="image" href="assets/maisninho-barras-1000.webp" imagesrcset="assets/maisninho-barras-640.webp 640w, assets/maisninho-barras-1000.webp 1000w" imagesizes="(min-width:960px) 420px, 64vw" type="image/webp">
+<link rel="preload" as="image" href="assets/video/hero-poster.webp" type="image/webp" fetchpriority="high">
 
 <script type="application/ld+json">
 {
@@ -267,40 +267,69 @@ h1,h2,h3{margin:0;line-height:1.02;font-weight:800;letter-spacing:-.02em}
 }
 .checker.thin{height:10px;background-size:10px 10px}
 
-/* ---------- Hero ---------- */
-.hero{background:var(--amarelo);position:relative;overflow:hidden}
-.hero .wrap{
-  display:grid;gap:clamp(32px,5vw,64px);align-items:center;
-  padding-top:clamp(28px,6vw,72px);padding-bottom:clamp(48px,8vw,104px);
+/* ---------- Hero: vídeo fixo de fundo, textos por cima ----------
+   O vídeo fica position:fixed e a seção recorta com clip-path,
+   então ao rolar a página desliza por cima dele. */
+.hero{
+  position:relative;isolation:isolate;background:#140e0a;color:var(--leite);
+  clip-path:inset(0);
+  min-height:calc(100svh - 116px);display:flex;flex-direction:column;
 }
-@media (min-width:960px){.hero .wrap{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}}
+@media (min-width:960px){.hero{min-height:max(620px, calc(100svh - 116px))}}
+.hero-bg{position:fixed;inset:0;z-index:-2;height:100lvh;pointer-events:none}
+.hero-bg video,.hero-bg .hero-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% center;display:block}
+.hero-shade{ /* degradê: escuro onde está o texto, livre onde está o doce */
+  position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:
+    linear-gradient(180deg, rgba(20,14,10,.55) 0%, rgba(20,14,10,0) 22%, rgba(20,14,10,0) 70%, rgba(20,14,10,.7) 100%),
+    linear-gradient(90deg, rgba(20,14,10,.94) 0%, rgba(20,14,10,.82) 30%, rgba(20,14,10,.35) 58%, rgba(20,14,10,.05) 80%);
+}
+@media (max-width:959px){
+  .hero-shade{background:linear-gradient(180deg, rgba(20,14,10,.25) 0%, rgba(20,14,10,.6) 30%, rgba(20,14,10,.78) 62%, rgba(20,14,10,.92) 100%)}
+}
+.hero .wrap{
+  flex:1;display:flex;flex-direction:column;justify-content:center;
+  padding-top:clamp(40px,7vw,88px);padding-bottom:clamp(56px,8vw,104px);
+}
+.hero-copy{max-width:640px}
 .hero h1{
-  font-size:clamp(2.6rem,1.4rem + 5.2vw,5.6rem);
+  font-size:clamp(2.5rem,1.4rem + 5vw,4.75rem);
   font-variation-settings:"opsz" 96,"wdth" 86;
-  line-height:.96;letter-spacing:-.022em;max-width:14ch;
+  line-height:.96;letter-spacing:-.022em;max-width:15ch;color:var(--leite);
+  text-wrap:balance;
 }
 .hero h1 .line{display:inline}
 @media (min-width:960px){.hero h1 .line{display:block}}
-.hero-lede{font-size:clamp(1.0625rem,1rem + .4vw,1.3125rem);max-width:44ch;margin:24px 0 32px;color:var(--cacau-2)}
+.hero-lede{font-size:clamp(1.0625rem,1rem + .4vw,1.3125rem);max-width:44ch;margin:24px 0 32px;color:var(--manteiga-2)}
 .hero-actions{display:flex;flex-wrap:wrap;gap:12px}
-.hero-facts{display:flex;flex-wrap:wrap;gap:8px 28px;margin:36px 0 0;padding:0;list-style:none;font-weight:600;font-size:.95rem}
+.hero .btn-line{color:var(--leite);border-color:rgba(255,252,243,.7)}
+.hero .btn-line:hover{background:var(--amarelo);border-color:var(--amarelo);color:var(--cacau)}
+.hero-facts{display:flex;flex-wrap:wrap;gap:8px 28px;margin:36px 0 0;padding:0;list-style:none;font-weight:600;font-size:.95rem;color:var(--manteiga)}
 .hero-facts li{display:flex;align-items:center;gap:8px}
 .hero-facts svg{width:20px;height:20px;flex:none}
-
-/* moldura em formato de bala */
-.candy{position:relative;width:92%;max-width:600px;margin:0 auto;aspect-ratio:600/300}
-.candy .frame{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
-.candy .photo{
-  position:absolute;left:15%;right:15%;top:6%;bottom:6%;
-  clip-path:url(#lensClip);-webkit-clip-path:url(#lensClip);
-  background:var(--manteiga);
+.reel-btn{
+  position:absolute;right:var(--gutter);bottom:34px;z-index:2;width:44px;height:44px;border-radius:50%;
+  display:grid;place-items:center;cursor:pointer;
+  background:rgba(20,14,10,.45);color:var(--leite);border:1.5px solid rgba(255,252,243,.55);
+  transition:transform var(--t-fast) var(--ease-out), background-color var(--t-fast), color var(--t-fast);
 }
-.candy .photo img{width:100%;height:100%;object-fit:cover;object-position:50% 45%}
-.candy .end{transform-box:fill-box;transition:transform 900ms var(--ease-out)}
-.candy .end-l{transform-origin:right center}
-.candy .end-r{transform-origin:left center}
-.candy-caption{margin:14px 0 0;text-align:center;font-size:.875rem;color:var(--cacau-2)}
-.hero-visual{transform:translateY(var(--par,0px)) rotate(-4deg);will-change:transform}
+.reel-btn:hover{background:var(--amarelo);color:var(--cacau);border-color:var(--amarelo)}
+.reel-btn:active{transform:scale(.94)}
+.reel-btn svg{width:16px;height:16px}
+.reel-btn .i-play{display:none}
+.hero.is-paused .reel-btn .i-play{display:block}
+.hero.is-paused .reel-btn .i-pause{display:none}
+@media (max-width:959px){.reel-btn{top:16px;bottom:auto}}
+/* Tela em pé (celular/tablet): o vídeo é 16:9, então em vez de "cobrir" a tela
+   (o que cortava ~75% da largura) ele aparece inteiro no topo e o texto vem abaixo. */
+@media (orientation:portrait){
+  .hero{min-height:0}
+  .hero-bg{position:relative;inset:auto;z-index:0;width:100%;height:auto;aspect-ratio:16/9}
+  .hero-bg video,.hero-bg .hero-poster{object-position:center}
+  .hero-bg::after{content:"";position:absolute;left:0;right:0;bottom:0;height:40%;background:linear-gradient(180deg,rgba(20,14,10,0),#140e0a)}
+  .hero-shade{display:none}
+  .hero .wrap{padding-top:20px}
+}
 
 /* ---------- Seções gerais ---------- */
 section{position:relative}
@@ -332,7 +361,6 @@ section{position:relative}
 .js .doce-media img{clip-path:inset(0 0 0 0 round var(--radius))}
 .js .doce[data-reveal] .doce-media img{transition:clip-path 900ms var(--ease-out);clip-path:inset(12% 12% 12% 12% round var(--radius))}
 .js .doce[data-reveal].is-in .doce-media img{clip-path:inset(0 0 0 0 round var(--radius))}
-.candy.is-in .end-l,.candy.is-in .end-r{animation:twist 600ms var(--ease-out) 2 alternate}
 
 /* ---------- Atacado & varejo ---------- */
 .compra{background:var(--cacau);color:var(--leite)}
@@ -463,8 +491,8 @@ section{position:relative}
 .js [data-reveal][data-delay="2"]{transition-delay:180ms}
 
 /* hero: a única sequência orquestrada, depois do loader */
-.js .hero h1 .line,.js .hero-lede,.js .hero-actions,.js .hero-facts,.js .hero-visual-wrap{opacity:0;transform:translateY(24px)}
-.js.is-loaded .hero h1 .line,.js.is-loaded .hero-lede,.js.is-loaded .hero-actions,.js.is-loaded .hero-facts,.js.is-loaded .hero-visual-wrap{
+.js .hero h1 .line,.js .hero-lede,.js .hero-actions,.js .hero-facts{opacity:0;transform:translateY(24px)}
+.js.is-loaded .hero h1 .line,.js.is-loaded .hero-lede,.js.is-loaded .hero-actions,.js.is-loaded .hero-facts{
   opacity:1;transform:none;transition:opacity 800ms var(--ease-out), transform 800ms var(--ease-out)
 }
 .js.is-loaded .hero h1 .line:nth-child(2){transition-delay:80ms}
@@ -472,15 +500,13 @@ section{position:relative}
 .js.is-loaded .hero-lede{transition-delay:240ms}
 .js.is-loaded .hero-actions{transition-delay:320ms}
 .js.is-loaded .hero-facts{transition-delay:400ms}
-.js.is-loaded .hero-visual-wrap{transition-delay:200ms}
 
 @media (prefers-reduced-motion:reduce){
   .js .doce[data-reveal] .doce-media img{clip-path:none}
   html{scroll-behavior:auto}
   *,*::before,*::after{animation-duration:1ms !important;animation-iteration-count:1 !important;transition-duration:1ms !important;transition-delay:0ms !important}
   .loader{display:none}
-  .hero-visual{transform:rotate(-4deg)}
-  .js [data-reveal],.js .hero h1 .line,.js .hero-lede,.js .hero-actions,.js .hero-facts,.js .hero-visual-wrap{opacity:1;transform:none}
+  .js [data-reveal],.js .hero h1 .line,.js .hero-lede,.js .hero-actions,.js .hero-facts{opacity:1;transform:none}
 }
 </style>
 </head>
@@ -489,9 +515,6 @@ section{position:relative}
 <!-- Definições SVG reutilizadas: recorte em formato de lente e ícones -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
-    <clipPath id="lensClip" clipPathUnits="objectBoundingBox">
-      <path d="M0,.5 Q.5,-.14 1,.5 Q.5,1.14 0,.5Z"/>
-    </clipPath>
     <symbol id="i-zap" viewBox="0 0 24 24"><path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm.01 18.15h-.01a8.23 8.23 0 0 1-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.21 8.21 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.22 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.16.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.13-.15.17-.25.25-.42.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28Z"/></symbol>
     <symbol id="i-pin" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
     <symbol id="i-phone" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></symbol>
@@ -572,9 +595,21 @@ section{position:relative}
 <main id="conteudo">
 
   <!-- HERO -->
-  <section class="hero" aria-labelledby="h1">
+  <section class="hero on-dark" id="reel" aria-labelledby="h1">
+    <div class="hero-bg" aria-hidden="true">
+      <picture>
+        <source media="(max-width:767px)" srcset="assets/video/hero-poster-480.webp" type="image/webp">
+        <source srcset="assets/video/hero-poster.webp" type="image/webp">
+        <img class="hero-poster" src="assets/video/hero-poster.jpg" width="1280" height="720" alt="" fetchpriority="high">
+      </picture>
+      <video id="reel-video" autoplay muted loop playsinline preload="auto" disablepictureinpicture disableremoteplayback width="1280" height="720" poster="assets/video/hero-poster.webp" tabindex="-1">
+        <source src="assets/video/hero-480.mp4" type="video/mp4" media="(max-width:767px)">
+        <source src="assets/video/hero-720.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="hero-shade" aria-hidden="true"></div>
     <div class="wrap">
-      <div>
+      <div class="hero-copy">
         <h1 id="h1">
           <span class="line">Ameixa de queijo,</span>
           <span class="line">queijadinha e doce de ninho</span>
@@ -595,29 +630,11 @@ section{position:relative}
           <li><svg aria-hidden="true"><use href="#i-clock"/></svg>Seg. a sex., 8h às 17h</li>
         </ul>
       </div>
-
-      <div class="hero-visual-wrap">
-        <figure class="hero-visual" style="margin:0">
-          <div class="candy" id="hero-candy">
-            <svg class="frame" viewBox="0 0 600 300" aria-hidden="true">
-              <g class="end end-l"><use href="#wrap-end" transform="translate(0 90)"/></g>
-              <g class="end end-r"><use href="#wrap-end" transform="translate(500 90)"/></g>
-              <path d="M62 150 Q300 -46 538 150 Q300 346 62 150Z" fill="#F5D58A"/>
-            </svg>
-            <div class="photo">
-              <picture>
-                <source srcset="assets/maisninho-barras-640.webp 640w, assets/maisninho-barras-1000.webp 1000w" sizes="(min-width:960px) 420px, 64vw" type="image/webp">
-                <img src="assets/maisninho-barras.jpg" width="1000" height="610" alt="Barrinhas de Maisninho, o doce de leite em pó da Receita Caseira, embaladas uma a uma" fetchpriority="high">
-              </picture>
-            </div>
-            <svg class="frame" viewBox="0 0 600 300" aria-hidden="true" style="pointer-events:none">
-              <path d="M90 150 Q300 -12 510 150 Q300 312 90 150Z" fill="none" stroke="#2B211B" stroke-width="14" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <figcaption class="candy-caption">Maisninho, embalado um a um na fábrica</figcaption>
-        </figure>
-      </div>
     </div>
+    <button class="reel-btn" type="button" id="reel-btn" aria-label="Pausar vídeo de fundo">
+      <svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M4 2.5h2.6v11H4zM9.4 2.5H12v11H9.4z"/></svg>
+      <svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M4.5 2.3v11.4L13 8z"/></svg>
+    </button>
     <div class="checker" data-chk="1" aria-hidden="true"></div>
   </section>
 
@@ -950,14 +967,12 @@ section{position:relative}
       entries.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('is-in'); io.unobserve(en.target);} });
     },{rootMargin:'0px 0px -12% 0px',threshold:.08});
     document.querySelectorAll('[data-reveal]').forEach(function(el){io.observe(el)});
-    var hc=document.getElementById('hero-candy');
-    document.addEventListener('transitionend',function once(e){ if(e.target.classList&&e.target.classList.contains('hero-visual-wrap')){hc.classList.add('is-in');document.removeEventListener('transitionend',once)} });
   } else {
     document.querySelectorAll('[data-reveal]').forEach(function(el){el.classList.add('is-in')});
   }
 
   /* ---------- Scroll: cabeçalho, parallax, xadrez, barra móvel, nav ativa ---------- */
-  var header=document.querySelector('.site-header'), hv=document.querySelector('.hero-visual');
+  var header=document.querySelector('.site-header');
   var chks=document.querySelectorAll('[data-chk]'), bar=document.getElementById('mobile-bar');
   var hero=document.querySelector('.hero');
   var links=[].slice.call(document.querySelectorAll('.nav a'));
@@ -967,7 +982,6 @@ section{position:relative}
     var y=window.scrollY||0;
     header.classList.toggle('is-stuck', y>40);
     if(!reduce){
-      if(y<900) hv.style.setProperty('--par',(y*-0.12).toFixed(1)+'px');
       chks.forEach(function(c){c.style.setProperty('--chk',(y*0.25*(+c.getAttribute('data-chk'))).toFixed(1)+'px')});
     }
     bar.classList.toggle('is-visible', y > hero.offsetHeight*0.55);
@@ -977,6 +991,38 @@ section{position:relative}
   }
   window.addEventListener('scroll',function(){ if(!ticking){ticking=true;requestAnimationFrame(onScroll)} },{passive:true});
   onScroll();
+
+  /* ---------- Vídeo do topo ----------
+     Toca sozinho, mudo e em loop (autoplay no HTML). O botão só pausa/retoma.
+     Fora da tela ele pausa para poupar bateria e volta ao reaparecer. */
+  var reel=document.getElementById('reel'), vid=document.getElementById('reel-video'), rbtn=document.getElementById('reel-btn');
+  var userPaused=false, inView=true;
+  vid.muted=true; vid.defaultMuted=true;
+  function setPaused(p){
+    reel.classList.toggle('is-paused',p);
+    rbtn.setAttribute('aria-label',p?'Reproduzir vídeo de fundo':'Pausar vídeo de fundo');
+  }
+  function tryPlay(){
+    var pr=vid.play();
+    if(pr&&pr.catch) pr.catch(function(){ setPaused(true); });
+  }
+  vid.addEventListener('playing',function(){ setPaused(false); var po=reel.querySelector('picture'); if(po) po.style.visibility='hidden'; });
+  vid.addEventListener('pause',function(){ if(userPaused) setPaused(true); });
+  rbtn.addEventListener('click',function(){
+    if(vid.paused){ userPaused=false; tryPlay(); } else { userPaused=true; vid.pause(); setPaused(true); }
+  });
+  tryPlay();
+  // alguns celulares só liberam o play depois do primeiro toque
+  ['touchstart','pointerdown','scroll'].forEach(function(ev){
+    window.addEventListener(ev,function once(){ if(!userPaused && inView && vid.paused) tryPlay(); window.removeEventListener(ev,once); },{passive:true});
+  });
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(en){
+      inView=en[0].isIntersecting;
+      if(inView && !userPaused) tryPlay(); else if(!inView) vid.pause();
+    },{threshold:.05}).observe(reel);
+  }
+  document.addEventListener('visibilitychange',function(){ if(!document.hidden && inView && !userPaused) tryPlay(); });
 
   /* ---------- Mapa: carrega ao chegar perto ou no toque ---------- */
   var mapa=document.getElementById('mapa'), loaded=false;
